@@ -48,9 +48,16 @@ namespace GeneralLedger.Test
         [Test]
         public void CanViewASingleJournal()
         {
-            _journals = new [] { new Object() };
+            _journals = new [] { new Journal
+            {
+                Description = "Appreciation of bricks and mortar",
+                PostingDate = DateTime.Parse("2008/01/01 9:00")
+            } };
 
-            ExpectOneJournal(Execute());
+            var viewJournalsResponse = Execute();
+            viewJournalsResponse.Journals.First().Date.Should().Be(DateTime.Parse("2008/01/01 9:00"));
+            viewJournalsResponse.Journals.First().Description.Should().Be("Appreciation of bricks and mortar");
+            ExpectOneJournal(viewJournalsResponse);
         }
     }
 }

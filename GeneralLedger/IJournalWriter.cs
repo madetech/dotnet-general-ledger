@@ -2,6 +2,6 @@ namespace GeneralLedger
 {
     public interface IJournalWriter
     {
-        void Save();
+        void Save(Journal journal);
     }
 }

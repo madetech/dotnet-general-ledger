@@ -11,7 +11,11 @@ namespace GeneralLedger
 
         public void Execute(PostJournalRequest postJournalRequest)
         {
-            _journalGateway.Save();
+            _journalGateway.Save(new Journal
+            {
+                Description = postJournalRequest.Description,
+                PostingDate = postJournalRequest.Date
+            });
         }
     }
 }

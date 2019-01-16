@@ -1,12 +1,16 @@
+using System;
+
 namespace GeneralLedger
 {
     public class PostJournalRequest
     {
 
-        public class Component
+        public class Entry
         {
             
         }
-        public Component[] Components { get; set; }
+        public Entry[] Entries { get; set; }
+        public DateTime Date { get; set; }
+        public string Description { get; set; }
     }
 }

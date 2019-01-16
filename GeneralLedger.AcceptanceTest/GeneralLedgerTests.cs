@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Collections;
 using NUnit.Framework;
@@ -14,7 +16,7 @@ namespace GeneralLedger.AcceptanceTest
             return _journals;
         }
 
-        public void Save()
+        public void Save(Journal journal)
         {
             _journals.Add(new object());
         }
@@ -31,10 +33,9 @@ namespace GeneralLedger.AcceptanceTest
         {
             _postJournal.Execute(new PostJournalRequest
             {
-                Components = new[]
-                {
-                    new PostJournalRequest.Component()
-                }
+                Date = DateTime.Parse("2019/01/01 17:00"),
+                Description = "Moving asset valuation",
+                Entries = new PostJournalRequest.Entry[]{}
             });
         }
 
@@ -77,6 +78,9 @@ namespace GeneralLedger.AcceptanceTest
             WhenViewingJournals();
 
             ThenThereShouldBeOneJournal();
+
+            _viewJournalsResponse.Journals.First().Date.Should().Be(DateTime.Parse("2019/01/01 17:00"));
+            _viewJournalsResponse.Journals.First().Description.Should().Be("Moving asset valuation.");
         }
     }
 }

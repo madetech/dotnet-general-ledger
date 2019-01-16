@@ -1,3 +1,5 @@
+using System;
+
 namespace GeneralLedger
 {
     public class ViewJournalsResponse
@@ -6,6 +8,8 @@ namespace GeneralLedger
 
         public class PresentableJournal
         {
+            public DateTime Date { get; set; }
+            public string Description { get; set; }
         }
     }
 }
