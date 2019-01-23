@@ -1,3 +1,5 @@
+using System;
+
 namespace GeneralLedger
 {
     public class ViewJournals
@@ -20,6 +22,10 @@ namespace GeneralLedger
                     Journals = new[]
                     {
                         new ViewJournalsResponse.PresentableJournal()
+                        {
+                            PostingDateTime = journals[0].PostingDate,
+                            Description = journals[0].Description
+                        }
                     }
                 }; 
             }

@@ -30,7 +30,7 @@ namespace GeneralLedger.Test
             var postJournal = new PostJournal(this);
             postJournal.Execute(new PostJournalRequest
             {
-                Date = DateTime.Parse(date),
+                PostingDateTime = DateTime.Parse(date),
                 Description = description
             });
 

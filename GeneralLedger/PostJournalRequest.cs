@@ -10,7 +10,7 @@ namespace GeneralLedger
             
         }
         public Entry[] Entries { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime PostingDateTime { get; set; }
         public string Description { get; set; }
     }
 }

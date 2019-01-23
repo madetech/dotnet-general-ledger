@@ -14,7 +14,7 @@ namespace GeneralLedger
             _journalGateway.Save(new Journal
             {
                 Description = postJournalRequest.Description,
-                PostingDate = postJournalRequest.Date
+                PostingDate = postJournalRequest.PostingDateTime
             });
         }
     }

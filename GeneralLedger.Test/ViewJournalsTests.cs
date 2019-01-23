@@ -2,17 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using FluentAssertions.Collections;
 using NUnit.Framework;
 
 namespace GeneralLedger.Test
 {
     public class ViewJournalsTests : IJournalReader
     {
-        private Object[] _journals;
+        private Journal[] _journals;
         private ViewJournals _viewJournals;
 
-        public List<object> All()
+        public List<Journal> All()
         {
             return _journals.ToList();
         }
@@ -27,6 +26,13 @@ namespace GeneralLedger.Test
             response.Journals.Should().HaveCount(1);
         }
 
+        private static void ExpectPresentableJournalToHave(string expectedDescription, string expectedDateTime,
+            ViewJournalsResponse.PresentableJournal firstPresentableJournal)
+        {
+            firstPresentableJournal.PostingDateTime.Should().Be(DateTime.Parse(expectedDateTime));
+            firstPresentableJournal.Description.Should().Be(expectedDescription);
+        }
+
         private ViewJournalsResponse Execute()
         {
             return _viewJournals.Execute();
@@ -35,7 +41,7 @@ namespace GeneralLedger.Test
         [SetUp]
         public void SetUp()
         {
-            _journals = new Object[] { };
+            _journals = new Journal[] { };
             _viewJournals = new ViewJournals(this);
         }
 
@@ -46,17 +52,35 @@ namespace GeneralLedger.Test
         }
 
         [Test]
-        public void CanViewASingleJournal()
+        [TestCase(
+            "Appreciation of bricks and mortar", "2008/01/01 9:00",
+            "Appreciation of bricks and mortar", "2008/01/01 9:00"
+        )]
+        [TestCase(
+            "Correcting bookkeeping error", "2011/01/01 17:00",
+            "Correcting bookkeeping error", "2011/01/01 17:00"
+        )]
+        public void CanViewASingleJournal(
+            string description,
+            string dateTime,
+            string expectedDescription,
+            string expectedDateTime
+        )
         {
-            _journals = new [] { new Journal
+            _journals = new[]
             {
-                Description = "Appreciation of bricks and mortar",
-                PostingDate = DateTime.Parse("2008/01/01 9:00")
-            } };
+                new Journal
+                {
+                    Description = description,
+                    PostingDate = DateTime.Parse(dateTime)
+                }
+            };
 
             var viewJournalsResponse = Execute();
-            viewJournalsResponse.Journals.First().Date.Should().Be(DateTime.Parse("2008/01/01 9:00"));
-            viewJournalsResponse.Journals.First().Description.Should().Be("Appreciation of bricks and mortar");
+
+            var firstPresentableJournal = viewJournalsResponse.Journals.First();
+            
+            ExpectPresentableJournalToHave(expectedDescription, expectedDateTime, firstPresentableJournal);
             ExpectOneJournal(viewJournalsResponse);
         }
     }

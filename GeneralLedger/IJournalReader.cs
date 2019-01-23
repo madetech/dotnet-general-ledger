@@ -5,6 +5,6 @@ namespace GeneralLedger
 {
     public interface IJournalReader
     {
-        List<Object> All();
+        List<Journal> All();
     }
 }

@@ -2,62 +2,55 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using FluentAssertions.Collections;
 using NUnit.Framework;
 
 namespace GeneralLedger.AcceptanceTest
 {
-    public class JournalGateway : IJournalGateway
+    public class InMemoryJournalGateway : IJournalGateway
     {
-        private readonly List<object> _journals = new List<object>();
-
-        public List<object> All()
-        {
-            return _journals;
-        }
-
-        public void Save(Journal journal)
-        {
-            _journals.Add(new object());
-        }
+        private readonly List<Journal> _journals = new List<Journal>();
+        public List<Journal> All() => _journals;
+        public void Save(Journal journal) => _journals.Add(journal);
     }
 
     public class GeneralLedgerTests
     {
         private ViewJournals _viewJournals;
-        private JournalGateway _journalGateway;
+        private InMemoryJournalGateway _journalGateway;
         private PostJournal _postJournal;
         private ViewJournalsResponse _viewJournalsResponse;
 
-        private void GivenOneJournal()
+        private void GivenOneJournal(string dateTime, string description)
         {
             _postJournal.Execute(new PostJournalRequest
             {
-                Date = DateTime.Parse("2019/01/01 17:00"),
-                Description = "Moving asset valuation",
-                Entries = new PostJournalRequest.Entry[]{}
+                PostingDateTime = DateTime.Parse(dateTime),
+                Description = description,
+                Entries = new PostJournalRequest.Entry[] { }
             });
         }
 
-        private void WhenViewingJournals()
-        {
-            _viewJournalsResponse = _viewJournals.Execute();
-        }
+        private void WhenViewingJournals() => _viewJournalsResponse = _viewJournals.Execute();
 
-        private void ThenJournalsShouldBeEmpty()
-        {
-            _viewJournalsResponse.Journals.Should().BeEmpty();
-        }
+        private void ThenJournalsShouldBeEmpty() => _viewJournalsResponse.Journals.Should().BeEmpty();
 
-        private void ThenThereShouldBeOneJournal()
+        private void ThenThereShouldBeOneJournal() => _viewJournalsResponse.Journals.Should().HaveCount(1);
+
+        private void AndThereShouldBeAJournalMatching(
+            int journalNumber,
+            string expectedDateTime,
+            string expectedDescription
+        )
         {
-            _viewJournalsResponse.Journals.Should().HaveCount(1);
+            var firstPresentableJournal = _viewJournalsResponse.Journals[journalNumber - 1];
+            firstPresentableJournal.PostingDateTime.Should().Be(DateTime.Parse(expectedDateTime));
+            firstPresentableJournal.Description.Should().Be(expectedDescription);
         }
 
         [SetUp]
         public void SetUp()
         {
-            _journalGateway = new JournalGateway();
+            _journalGateway = new InMemoryJournalGateway();
             _viewJournals = new ViewJournals(_journalGateway);
             _postJournal = new PostJournal(_journalGateway);
         }
@@ -73,14 +66,19 @@ namespace GeneralLedger.AcceptanceTest
         [Test]
         public void CanViewASingleJournal()
         {
-            GivenOneJournal();
-            
+            GivenOneJournal(
+                "2019/01/01 17:00",
+                "Moving asset valuation."
+            );
+
             WhenViewingJournals();
 
             ThenThereShouldBeOneJournal();
-
-            _viewJournalsResponse.Journals.First().Date.Should().Be(DateTime.Parse("2019/01/01 17:00"));
-            _viewJournalsResponse.Journals.First().Description.Should().Be("Moving asset valuation.");
+            AndThereShouldBeAJournalMatching(
+                1,
+                "2019/01/01 17:00",
+                "Moving asset valuation."
+            );
         }
     }
 }
