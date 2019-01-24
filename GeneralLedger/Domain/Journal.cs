@@ -1,6 +1,6 @@
 using System;
 
-namespace GeneralLedger
+namespace GeneralLedger.Domain
 {
     public class Journal
     {

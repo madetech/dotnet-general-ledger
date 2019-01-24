@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
+using GeneralLedger.Boundary;
+using GeneralLedger.Domain;
+using GeneralLedger.UseCase;
 using NUnit.Framework;
 
 namespace GeneralLedger.AcceptanceTest
@@ -19,10 +22,11 @@ namespace GeneralLedger.AcceptanceTest
         private InMemoryJournalGateway _journalGateway;
         private PostJournal _postJournal;
         private ViewJournalsResponse _viewJournalsResponse;
+        private ViewJournal _viewJournal;
 
-        private void GivenOneJournal(string dateTime, string description)
+        private PostJournalResponse GivenOneJournal(string dateTime, string description)
         {
-            _postJournal.Execute(new PostJournalRequest
+            return _postJournal.Execute(new PostJournalRequest
             {
                 PostingDateTime = DateTime.Parse(dateTime),
                 Description = description,
@@ -79,6 +83,54 @@ namespace GeneralLedger.AcceptanceTest
                 "2019/01/01 17:00",
                 "Moving asset valuation."
             );
+        }
+
+        [Test]
+        public void CanCreateABalancingJournal()
+        {
+            var response = GivenOneJournal(
+                "2019/01/01 17:00",
+                "Correction",
+                new[]
+                {
+                    new PostJournalRequest.Entry
+                    {
+                        Type = DEBIT,
+                        Amount = 10.00
+                    },
+                    new PostJournalRequest.Entry
+                    {
+                        Type = CREDIT,
+                        Amount = 10.00
+                    }
+                }
+            );
+
+            var journalId = response.Id;
+
+            WhenViewingAJournal(journalId);
+
+            ThenTheJournalShouldContainACreditOf(new decimal(10.00));
+            AndShouldContainADebitOf(new decimal(10.00));
+        }
+
+        private void AndShouldContainADebitOf(decimal expectedAmount)
+        {
+            
+        }
+
+        private void ThenTheJournalShouldContainACreditOf(decimal expectedAmount)
+        {
+            
+        }
+
+        private void WhenViewingAJournal(string journalId)
+        {
+            _viewJournalsResponse = _viewJournal.Execute(new ViewJournalRequest
+            {
+                Id = journalId
+            });
+
         }
     }
 }

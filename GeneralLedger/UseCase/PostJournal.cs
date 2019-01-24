@@ -1,4 +1,7 @@
-namespace GeneralLedger
+using GeneralLedger.Boundary;
+using GeneralLedger.Domain;
+
+namespace GeneralLedger.UseCase
 {
     public class PostJournal
     {
@@ -9,13 +12,20 @@ namespace GeneralLedger
             _journalGateway = journalGateway;
         }
 
-        public void Execute(PostJournalRequest postJournalRequest)
+        public PostJournalResponse Execute(PostJournalRequest postJournalRequest)
         {
             _journalGateway.Save(new Journal
             {
                 Description = postJournalRequest.Description,
                 PostingDate = postJournalRequest.PostingDateTime
             });
+
+            return null;
         }
+    }
+
+    public interface IJournalWriter
+    {
+        void Save(Journal journal);
     }
 }

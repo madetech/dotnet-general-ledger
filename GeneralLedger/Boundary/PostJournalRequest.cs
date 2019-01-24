@@ -1,10 +1,9 @@
 using System;
 
-namespace GeneralLedger
+namespace GeneralLedger.Boundary
 {
     public class PostJournalRequest
     {
-
         public class Entry
         {
             

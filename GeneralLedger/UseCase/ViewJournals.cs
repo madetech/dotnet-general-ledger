@@ -1,6 +1,8 @@
-using System;
+using System.Collections.Generic;
+using GeneralLedger.Boundary;
+using GeneralLedger.Domain;
 
-namespace GeneralLedger
+namespace GeneralLedger.UseCase
 {
     public class ViewJournals
     {
@@ -35,5 +37,10 @@ namespace GeneralLedger
                 Journals = new ViewJournalsResponse.PresentableJournal[]{}
             };
         }
+    }
+
+    public interface IJournalReader
+    {
+        List<Journal> All();
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace GeneralLedger
+namespace GeneralLedger.Boundary
 {
     public class ViewJournalsResponse
     {

@@ -1,5 +1,8 @@
 using System;
 using FluentAssertions;
+using GeneralLedger.Boundary;
+using GeneralLedger.Domain;
+using GeneralLedger.UseCase;
 using NUnit.Framework;
 
 namespace GeneralLedger.Test
